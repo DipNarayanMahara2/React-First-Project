@@ -1,8 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Background.css";
 import { Link } from "react-router-dom";
 
-const Form = ({ type }) => {
+const Form = ({ type, onSubmit }) => {
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData({
+      ...data,
+      [name]: value,
+    });
+  };
+
+  const hanldeSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(data);
+  };
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center overflow-hidden">
       {/* Background floating blobs */}
@@ -10,8 +27,9 @@ const Form = ({ type }) => {
       <div className="absolute w-[28rem] h-[28rem] bg-indigo-500 opacity-30 rounded-full blur-3xl animate-float-delay bottom-[-10rem] right-[-10rem] z-0" />
 
       {/* Form container */}
+
       <div className="relative z-10 w-full max-w-sm p-4 mx-auto mt-7 border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <form className="space-y-6" action="#">
+        <form className="space-y-6" onSubmit={hanldeSubmit}>
           <h5 className="text-xl font-medium text-gray-900 dark:text-white">
             {type} in to our platform
           </h5>
@@ -25,8 +43,9 @@ const Form = ({ type }) => {
               </label>
               <input
                 type="text"
-                name="Username"
-                id="Username"
+                name="username"
+                id="username"
+                onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 placeholder="AdamJones...."
                 required
@@ -44,9 +63,10 @@ const Form = ({ type }) => {
               type="email"
               name="email"
               id="email"
+              onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="name@company.com"
-              required
+              // required
             />
           </div>
           <div>
@@ -60,6 +80,7 @@ const Form = ({ type }) => {
               type="password"
               name="password"
               id="password"
+              onChange={handleChange}
               placeholder="••••••••"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               required
@@ -97,18 +118,17 @@ const Form = ({ type }) => {
           >
             {type}
           </button>
-          {type === "Login" && (
+          {type === "Login" ? (
             <div className="flex text-lg text-gray-500 dark:text-gray-300">
-              <p className="mr-3">Already have an account?</p>
+              <p className="mr-3">Don't have an account?</p>
               <Link
                 to="/register"
                 className="text-blue-700 hover:underline dark:text-blue-500"
               >
-               Register
+                Register
               </Link>
             </div>
-          )}
-          {type === "Register" && (
+          ) : (
             <div className="text-sm flex font-medium text-gray-500 dark:text-gray-300">
               <p className="mr-3 text-lg">Already have an account?</p>
               <Link
