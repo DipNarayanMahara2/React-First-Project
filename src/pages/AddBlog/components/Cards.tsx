@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Cards = () => {
   return (
     <Link to="/blog/id">
-      <div className="w-full max-w-[280px] rounded overflow-hidden shadow-lg mb-7">
+      <div className="w-full bg max-w-[280px] rounded overflow-hidden shadow-lg mb-7 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
         <img
           className="w-full h-auto object-cover"
           src="https://cdn.pixabay.com/photo/2018/08/04/11/30/draw-3583548_640.png"
