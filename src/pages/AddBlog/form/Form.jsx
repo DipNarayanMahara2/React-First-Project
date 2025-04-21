@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { baseUrl } from "../../../config";
 
-const Form = ({ type, onSubmit }) => {
+const Form = ({ type, onSubmit, initialData, blogId }) => {
   const [data, setData] = useState({
     title: "",
     subtitle: "",
@@ -8,6 +10,19 @@ const Form = ({ type, onSubmit }) => {
     category: "",
     image: "",
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setData({
+        title: initialData.title || "",
+        subtitle: initialData.subtitle || "",
+        description: initialData.description || "",
+        category: initialData.category || "",
+        image: "",
+      });
+    }
+  }, [initialData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData({
@@ -15,9 +30,37 @@ const Form = ({ type, onSubmit }) => {
       [name]: name === "image" ? e.target.files[0] : value,
     });
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(data);
+
+    try {
+      if (type === "edit") {
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+          formData.append(key, data[key]);
+        });
+
+        const response = await axios.patch(
+          `${baseUrl}/blog/${blogId}`,
+          formData,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          alert("Blog Updated Successfully!");
+          onSubmit(response.data.data); // Pass updated data back to parent
+        }
+      } else {
+        onSubmit(data);
+      }
+    } catch (error) {
+      console.error("Failed to submit blog:", error);
+    }
   };
 
   return (
@@ -36,6 +79,7 @@ const Form = ({ type, onSubmit }) => {
               type="text"
               placeholder="Title*"
               name="title"
+              value={data.title}
               onChange={handleChange}
             />
             <input
@@ -43,6 +87,7 @@ const Form = ({ type, onSubmit }) => {
               type="text"
               placeholder="Subtitle*"
               name="subtitle"
+              value={data.subtitle}
               onChange={handleChange}
             />
             <input
@@ -56,6 +101,7 @@ const Form = ({ type, onSubmit }) => {
               type="text"
               placeholder="Category*"
               name="category"
+              value={data.category}
               onChange={handleChange}
             />
           </div>
@@ -65,13 +111,14 @@ const Form = ({ type, onSubmit }) => {
               placeholder="Description*"
               className="w-full h-32 bg-gray-100 text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-outline"
               name="description"
+              value={data.description}
               onChange={handleChange}
             />
           </div>
 
           <div className="w-full">
             <button className="uppercase text-sm font-bold tracking-wide bg-blue-900 text-white p-3 rounded-lg w-full hover:bg-blue-800 transition">
-              Post
+              {type === "edit" ? "Update" : "Post"}
             </button>
           </div>
         </form>
